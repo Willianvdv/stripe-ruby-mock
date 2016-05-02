@@ -1,7 +1,7 @@
 module StripeMock
 
   class Client
-    attr_reader :port, :state, :error_queue
+    attr_reader :port, :state
 
     def initialize(port)
       @port = port
@@ -9,7 +9,6 @@ module StripeMock
       # Ensure client can connect to server
       timeout_wrap(5) { @pipe.ping }
       @state = 'ready'
-      @error_queue = ErrorQueue.new
     end
 
     def mock_request(method, url, api_key, params={}, headers={})
@@ -42,6 +41,22 @@ module StripeMock
 
     def set_server_global_id_prefix(value)
       timeout_wrap { @pipe.set_global_id_prefix(value) }
+    end
+
+    def prepare_error(stripe_error, handler_name)
+      timeout_wrap do
+        # shame code
+        marshaled_stripe_error = Marshal.dump(stripe_error).unpack('H*')
+        @pipe.prepare_error marshaled_stripe_error, handler_name
+      end
+    end
+
+    def dequeue_error
+      timeout_wrap { @pipe.dequeue_error }
+    end
+
+    def error_for_handler_name(handler_name)
+      timeout_wrap { @pipe.error_for_handler_name(handler_name) }
     end
 
     def server_global_id_prefix

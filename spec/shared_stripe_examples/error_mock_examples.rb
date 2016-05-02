@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pry'
 
 def expect_card_error(code, param)
   expect { Stripe::Charge.create(amount: 1, currency: 'usd') }.to raise_error {|e|
