@@ -68,6 +68,10 @@ module StripeMock
       @base_strategy = TestStrategies::Base.new
     end
 
+    def prepare_error(stripe_error, handler_name)
+      error_queue.queue(stripe_error, handler_name)
+    end
+
     def mock_request(method, url, api_key, params={}, headers={}, api_base_url=nil)
       return {} if method == :xtest
 

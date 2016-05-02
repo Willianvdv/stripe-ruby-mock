@@ -47,6 +47,19 @@ module StripeMock
       @instance.debug = toggle
     end
 
+    def prepare_error(stripe_error, handler_name)
+      @instance.prepare_error(stripe_error, handler_name)
+    end
+
+    def error_for_handler_name(handler_name)
+      @instance.error_queue.error_for_handler_name(handler_name)
+    end
+
+    def dequeue_error
+      @instance.error_queue.dequeue
+    end
+
+
     def set_global_id_prefix(value)
       StripeMock.global_id_prefix = value
     end

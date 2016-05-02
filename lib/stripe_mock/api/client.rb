@@ -27,11 +27,18 @@ module StripeMock
 
   def self.redirect_to_mock_server(method, url, api_key, params={}, headers={}, api_base_url=nil)
     handler = Instance.handler_for_method_url("#{method} #{url}")
-    mock_error = client.error_queue.error_for_handler_name(handler[:name])
+    mock_error = client.error_for_handler_name(handler[:name])
     if mock_error
-      client.error_queue.dequeue
+      client.dequeue_error
+
+      # Shame code part deux
+      if mock_error.is_a? Array
+        mock_error = Marshal.load mock_error.pack('H*')
+      end
+
       raise mock_error
     end
+
     Stripe::Util.symbolize_names client.mock_request(method, url, api_key, params, headers)
   end
 
